@@ -27,7 +27,9 @@ function dataWork() {
     //task3();
     //task4();
     //task5();
-    task6();
+    //task6();
+    //task7();
+    task8();
 };
 
 function getInfo(addInfo = '') {
@@ -96,18 +98,38 @@ function task5() {
 };
 
 function task6() {
-    //const salaryItem = person.request.find(item => item.name === 'Зарплата');
-    //const salary = salaryItem ? Number(salaryItem.value) : 0;
-    
-    let pers = person.filter(ind => {
+    console.log('%cВсе backend-разработчики из Москвы, которые ищут работу на полный день, отсортированы в порядке возрастания зарплатных ожиданий:', 'color: green');
+    person.filter(ind => {
         return ind.personal.specializationId === specializations.find(spec => { return spec.name.toLowerCase() === 'backend' }).id
             && ind.personal.locationId === cities.find(city => { return city.name.toLowerCase() === 'москва' }).id
             && ind.request.find(req => { return req.name.toLowerCase() === 'тип занятости' }).value.toLowerCase() === 'полная';
-    }).map(el=>{
-        el.request.find(salary=>{return salary.name.toLowerCase()==='зарплата'}).value;
-    })
+    }).sort((a, b) =>
+        a.request.find(request => { return request.name.toLowerCase() === 'зарплата' }).value -
+        b.request.find(request => { return request.name.toLowerCase() === 'зарплата' }).value
+    ).forEach(pers => {
+        const salary = pers.request.find(request => { return request.name.toLowerCase() === 'зарплата' }).value;
+        console.log(getInfo.call(pers, `, Зарплатные ожидания: ${salary}`));
+    });
+};
 
-    let costArr = pers.find(ind => { return ind.request.some(cost => { return cost.name.toLowerCase() === 'зарплата' })});
+function task7() {
+    console.log('%cДизайнеры, владеющие Figma и Photoshop одновременно на уровне не ниже 6 баллов:', 'color: green');
+    person.filter(ind => {
+        return ind.personal.specializationId === specializations.find(spec => { return spec.name.toLowerCase() === 'designer' }).id
+            && ind.skills.find(skill => { return skill.name.toLowerCase() === 'figma' }).level >= 6
+            && ind.skills.find(skill => { return skill.name.toLowerCase() === 'photoshop' }).level >= 6
+    }).forEach(pers => {
+        const skillFigma = pers.skills.find(figma => { return figma.name.toLowerCase() === 'figma' }).level;
+        const skillPhotoshop = pers.skills.find(photoshop => { return photoshop.name.toLowerCase() === 'photoshop' }).level;
+        console.log(getInfo.call(pers, `. Владение Figma: ${skillFigma}; Владение Photoshop: ${skillPhotoshop}`));
+    });
+};
 
-    console.log(costArr);
+function task8() {
+    let team = person.filter(pers => {
+        return pers.personal.specializationId === specializations.find(spec => { return spec.name.toLowerCase() === 'designer' }).id
+    }).reduce((accum, current) => accum > current.skills.find(skill => { return skill.name.toLowerCase() === 'figma' }).level
+        ? accum : current.skills.find(skill => { return skill.name.toLowerCase() === 'figma' }).level);
+
+    console.log(team);
 };
